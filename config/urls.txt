@@ -1,0 +1,2 @@
+# Download Targets (1 URL per line)
+# Comment out with #

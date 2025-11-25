@@ -1,0 +1,5 @@
+config/cookies.txt
+downloads/
+__pycache__/
+*.db
+.DS_Store
