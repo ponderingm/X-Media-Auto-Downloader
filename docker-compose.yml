@@ -16,9 +16,13 @@ services:
     user: 1000:1000
     volumes:
       - x_downloads:/srv            # downloaderと同じ場所を見る
-      - ./filebrowser.db:/database.db
+      - x_filebrowser_config:/config # 設定・DB保存先
+    environment:
+      - FB_DATABASE=/config/filebrowser.db
+      - FB_ROOT=/srv
     ports:
       - "8080:80"                   # Coolify側で外部公開設定を行う
 
 volumes:
   x_downloads:                      # 名前付きボリューム
+  x_filebrowser_config:             # Filebrowser設定用ボリューム
