@@ -20,8 +20,8 @@ services:
     environment:
       - FB_DATABASE=/config/filebrowser.db
       - FB_ROOT=/srv
-    ports:
-      - "8080:80"                   # Coolify側で外部公開設定を行う
+    # ports:
+    #   - "8080:80"                   # Coolifyのドメイン設定を使用するためコメントアウト
 
 volumes:
   x_downloads:                      # 名前付きボリューム
