@@ -4,8 +4,8 @@ services:
     container_name: x_downloader
     restart: unless-stopped
     volumes:
-      - x_downloads:/downloads      # 永続化ボリューム（画像保存先）
-      - ./config:/config            # 設定・Cookie・履歴DB
+      - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # 永続化ボリューム（画像保存先）
+      - ${CONFIG_ROOT:-./config}:/config          # 設定・Cookie・履歴DB
     environment:
       - TZ=Asia/Tokyo
 
@@ -14,10 +14,10 @@ services:
     container_name: x_manager
     restart: unless-stopped
     volumes:
-      - x_downloads:/downloads      # urls.txtの読み書き用
-      - ./config:/config            # ログファイルの読み込み用
+      - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # urls.txtの読み書き用
+      - ${CONFIG_ROOT:-./config}:/config          # ログファイルの読み込み用
     ports:
-      - "9980:8000"                 # Host:9980 -> Container:8000
+      - "${MANAGER_PORT:-9980}:8000"              # Host:Port -> Container:8000
 
 volumes:
   x_downloads:                      # 名前付きボリューム
