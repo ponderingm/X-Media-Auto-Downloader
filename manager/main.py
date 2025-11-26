@@ -44,6 +44,13 @@ async def update_urls(update: UrlsUpdate):
     try:
         with open(URLS_FILE, "w") as f:
             f.write(update.content)
+        # Trigger download
+        try:
+            trigger_file = os.path.join(CONFIG_DIR, ".trigger_download")
+            with open(trigger_file, "w") as f:
+                f.write("trigger")
+        except Exception as e:
+            print(f"Failed to create trigger file: {e}")
         return JSONResponse(content={"status": "success"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
