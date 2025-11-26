@@ -39,7 +39,15 @@ Cronを使用し、毎日定時にスクレイピングを実行するコンテ�
     *   `gallery-dl` を使用してメディアをダウンロード
     *   ダウンロード履歴を `archive.sqlite3` に保存し、重複ダウンロードを防止
 
-### 2. Viewer (Immich)
+### 2. Manager (`x_manager`)
+
+`urls.txt` の編集と、ダウンロードログの確認を行うWebインターフェースです。
+
+*   **機能**:
+    *   **Target URLs**: ダウンロード対象URLの編集・保存
+    *   **Download Logs**: `downloader` の実行ログのリアルタイム確認
+
+### 3. Viewer (Immich)
 
 本プロジェクトにはビューワーは含まれていません。
 ダウンロードしたメディアを閲覧するには、別途 **Immich** をデプロイし、連携することを推奨します。
@@ -84,6 +92,6 @@ docker-compose logs -f downloader
 
 ## 開発・運用メモ
 
-*   **ログ**: `downloader` の標準出力は Docker ログにリダイレクトされているため、`docker logs` コマンドや Coolify のログ画面で確認できます。
+*   **ログ**: 管理画面 (Manager) の "Download Logs" から確認できます。また、`docker-compose logs` でも確認可能です。
 *   **永続化**: ダウンロードデータは `x_downloads` ボリュームに保存されます。
 *   **認証エラー**: ダウンロードが失敗する場合は、Cookie の有効期限切れの可能性があります。`cookies.txt` を更新してください。

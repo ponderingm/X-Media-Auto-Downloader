@@ -9,5 +9,15 @@ services:
     environment:
       - TZ=Asia/Tokyo
 
+  manager:
+    build: ./manager
+    container_name: x_manager
+    restart: unless-stopped
+    volumes:
+      - x_downloads:/downloads      # urls.txtの読み書き用
+      - ./config:/config            # ログファイルの読み込み用
+    ports:
+      - "8000:8000"                 # Coolifyで公開設定を行う
+
 volumes:
   x_downloads:                      # 名前付きボリューム

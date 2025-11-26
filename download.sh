@@ -5,8 +5,17 @@ URL_LIST="/downloads/urls.txt"
 COOKIE_FILE="/config/cookies.txt"
 ARCHIVE_FILE="/config/archive.sqlite3"
 
-echo "----------------------------------------"
-echo "Job started at $(date)"
+# ログファイル設定
+LOG_FILE="/config/download.log"
+
+# ログ出力関数 (stdout とファイルの両方に出力)
+log() {
+    local msg="$1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" | tee -a "$LOG_FILE"
+}
+
+log "----------------------------------------"
+log "Job started"
 
 # 初回用デフォルトファイル作成
 if [ ! -f "$URL_LIST" ]; then
@@ -23,18 +32,19 @@ if [ -f "$URL_LIST" ]; then
         
         # 整形
         url=$(echo "$url" | tr -d '\r' | xargs)
-        echo "Processing: $url"
+        log "Processing: $url"
         
         # 実行 (履歴管理あり)
+        # gallery-dlの出力もログに記録
         gallery-dl --cookies "$COOKIE_FILE" \
                    --directory /downloads \
                    --download-archive "$ARCHIVE_FILE" \
-                   "$url"
+                   "$url" 2>&1 | tee -a "$LOG_FILE"
                    
     done < "$URL_LIST"
 else
-    echo "Error: $URL_LIST not found."
+    log "Error: $URL_LIST not found."
 fi
 
-echo "Job finished at $(date)"
-echo "----------------------------------------"
+log "Job finished"
+log "----------------------------------------"
