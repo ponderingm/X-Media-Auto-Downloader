@@ -22,6 +22,9 @@ services:
       - "${MANAGER_PORT:-9980}:8000"              # Host:Port -> Container:8000
     environment:
       - TZ=Asia/Tokyo
+      - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT:-x_downloads}
+      - DEBUG_CONFIG_ROOT=${CONFIG_ROOT:-./config}
+      - DEBUG_MANAGER_PORT=${MANAGER_PORT:-9980}
 
 volumes:
   x_downloads:                      # 名前付きボリューム
