@@ -13,12 +13,7 @@ DOWNLOADS_DIR = "/downloads"
 URLS_FILE = os.path.join(DOWNLOADS_DIR, "urls.txt")
 LOG_FILE = os.path.join(CONFIG_DIR, "download.log")
 
-@app.on_event("startup")
-async def startup_event():
-    print("--- Manager Startup ---")
-    print(f"DEBUG_DOWNLOAD_ROOT: {os.getenv('DEBUG_DOWNLOAD_ROOT', 'Not Set')}")
-    print(f"DEBUG_MANAGER_PORT: {os.getenv('DEBUG_MANAGER_PORT', 'Not Set')}")
-    print("-----------------------")
+
 
 # テンプレートと静的ファイルの設定
 app.mount("/static", StaticFiles(directory="static"), name="static")
