@@ -1,6 +1,7 @@
 # X Media Auto-Downloader
 
-指定したX（旧Twitter）アカウントのメディア（画像・動画）を定期的に自動収集し、Webブラウザ経由で閲覧・管理・設定を行うシステムです。
+指定したX（旧Twitter）アカウントのメディア（画像・動画）を定期的に自動収集するシステムです。
+ダウンロードしたメディアはImmich等の外部ビューワーで閲覧することを想定しています。
 Coolify (Docker Compose) 上での稼働を想定しています。
 
 ## プロジェクト概要
@@ -9,7 +10,6 @@ Coolify (Docker Compose) 上での稼働を想定しています。
 *   **プラットフォーム**: Coolify (Docker Compose)
 *   **主要コンポーネント**:
     *   `downloader`: Python (gallery-dl, ffmpeg, cron) - バックエンド
-    *   `web`: FileBrowser (Go) - フロントエンド/管理
 
 ## ディレクトリ構成
 
@@ -39,14 +39,15 @@ Cronを使用し、毎日定時にスクレイピングを実行するコンテ�
     *   `gallery-dl` を使用してメディアをダウンロード
     *   ダウンロード履歴を `archive.sqlite3` に保存し、重複ダウンロードを防止
 
-### 2. Web Viewer (`x_viewer`)
+### 2. Viewer (Immich)
 
-ダウンロードされたファイルの閲覧および、設定ファイルの編集を行うWebインターフェースです。
+本プロジェクトにはビューワーは含まれていません。
+ダウンロードしたメディアを閲覧するには、別途 **Immich** をデプロイし、連携することを推奨します。
 
-*   **Image**: `filebrowser/filebrowser:latest`
-*   **機能**:
-    *   `/downloads` 以下のメディア閲覧・再生
-    *   `/downloads/urls.txt` のブラウザ上での直接編集
+*   **連携方法**:
+    1.  Coolify等で Immich をデプロイします。
+    2.  Immich の設定で、本プロジェクトの `x_downloads` ボリュームを **External Library** としてマウントします。
+    3.  Immich 上で External Library のスキャンを実行すると、ダウンロードされたメディアが取り込まれます。
 
 ## デプロイ・設定手順
 

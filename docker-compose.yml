@@ -9,20 +9,5 @@ services:
     environment:
       - TZ=Asia/Tokyo
 
-  web:
-    image: filebrowser/filebrowser:latest
-    container_name: x_viewer
-    restart: unless-stopped
-    user: 1000:1000
-    volumes:
-      - x_downloads:/srv            # downloaderと同じ場所を見る
-      - x_filebrowser_config:/config # 設定・DB保存先
-    environment:
-      - FB_DATABASE=/config/filebrowser.db
-      - FB_ROOT=/srv
-    # ports:
-    #   - "8080:80"                   # Coolifyのドメイン設定を使用するためコメントアウト
-
 volumes:
   x_downloads:                      # 名前付きボリューム
-  x_filebrowser_config:             # Filebrowser設定用ボリューム
