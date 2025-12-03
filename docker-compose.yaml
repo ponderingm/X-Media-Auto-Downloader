@@ -18,8 +18,8 @@ services:
     volumes:
       - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # urls.txtの読み書き用
       - ${CONFIG_ROOT:-./config}:/config          # ログファイルの読み込み用
-    ports:
-      - "${MANAGER_PORT:-9980}:8000"              # Host:Port -> Container:8000
+    expose:
+      - "80"
     environment:
       - TZ=Asia/Tokyo
 
