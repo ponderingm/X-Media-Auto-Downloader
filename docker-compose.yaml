@@ -1,0 +1,27 @@
+services:
+  downloader:
+    build: .
+    container_name: x_downloader
+    restart: unless-stopped
+    volumes:
+      - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # 永続化ボリューム（画像保存先）
+      - ${CONFIG_ROOT:-./config}:/config          # 設定・Cookie・履歴DB
+    environment:
+      - TZ=Asia/Tokyo
+      - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT:-x_downloads}
+      - DEBUG_MANAGER_PORT=${MANAGER_PORT:-9980}
+
+  manager:
+    build: ./manager
+    container_name: x_manager
+    restart: unless-stopped
+    volumes:
+      - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # urls.txtの読み書き用
+      - ${CONFIG_ROOT:-./config}:/config          # ログファイルの読み込み用
+    expose:
+      - "80"
+    environment:
+      - TZ=Asia/Tokyo
+
+volumes:
+  x_downloads:                      # 名前付きボリューム

@@ -3,3 +3,4 @@ downloads/
 __pycache__/
 *.db
 .DS_Store
+config/urls.txt

@@ -1,4 +1,4 @@
 # 毎日 午前4時00分 に実行
 # stdout/stderr をPID 1(Docker)のログにリダイレクトしてCoolifyでログを見れるようにする
-0 4 * * * root /entrypoint.sh > /proc/1/fd/1 2>&1
+0 4 * * * root /download.sh > /proc/1/fd/1 2>&1
 # (ファイルの末尾には必ず空行が必要)

@@ -1,6 +1,7 @@
 # X Media Auto-Downloader
 
-指定したX（旧Twitter）アカウントのメディア（画像・動画）を定期的に自動収集し、Webブラウザ経由で閲覧・管理・設定を行うシステムです。
+指定したX（旧Twitter）アカウントのメディア（画像・動画）を定期的に自動収集するシステムです。
+ダウンロードしたメディアはImmich等の外部ビューワーで閲覧することを想定しています。
 Coolify (Docker Compose) 上での稼働を想定しています。
 
 ## プロジェクト概要
@@ -9,7 +10,6 @@ Coolify (Docker Compose) 上での稼働を想定しています。
 *   **プラットフォーム**: Coolify (Docker Compose)
 *   **主要コンポーネント**:
     *   `downloader`: Python (gallery-dl, ffmpeg, cron) - バックエンド
-    *   `web`: FileBrowser (Go) - フロントエンド/管理
 
 ## ディレクトリ構成
 
@@ -39,16 +39,36 @@ Cronを使用し、毎日定時にスクレイピングを実行するコンテ�
     *   `gallery-dl` を使用してメディアをダウンロード
     *   ダウンロード履歴を `archive.sqlite3` に保存し、重複ダウンロードを防止
 
-### 2. Web Viewer (`x_viewer`)
+### 2. Manager (`x_manager`)
 
-ダウンロードされたファイルの閲覧および、設定ファイルの編集を行うWebインターフェースです。
+`urls.txt` の編集と、ダウンロードログの確認を行うWebインターフェースです。
 
-*   **Image**: `filebrowser/filebrowser:latest`
 *   **機能**:
-    *   `/downloads` 以下のメディア閲覧・再生
-    *   `/downloads/urls.txt` のブラウザ上での直接編集
+    *   **Target URLs**: ダウンロード対象URLの編集・保存
+    *   **Download Logs**: `downloader` の実行ログのリアルタイム確認
 
-## デプロイ・設定手順
+### 3. Viewer (Immich)
+
+本プロジェクトにはビューワーは含まれていません。
+ダウンロードしたメディアを閲覧するには、別途 **Immich** をデプロイし、連携することを推奨します。
+
+*   **連携方法**:
+    1.  Coolify等で Immich をデプロイします。
+    2.  Immich の設定で、本プロジェクトの `x_downloads` ボリュームを **External Library** としてマウントします。
+    3.  Immich 上で External Library のスキャンを実行すると、ダウンロードされたメディアが取り込まれます。
+
+## 環境変数設定 (Optional)
+53: 
+54: `docker-compose.yaml` の設定を環境変数で上書きできます。
+55: Coolifyの "Environment Variables" 設定、または `.env` ファイルで指定してください。
+56: 
+57: | 変数名 | デフォルト値 | 説明 |
+58: | :--- | :--- | :--- |
+59: | `DOWNLOAD_ROOT` | `x_downloads` | ダウンロードデータの保存先 (ボリューム名または絶対パス) |
+60: | `CONFIG_ROOT` | `./config` | 設定ファイル (`urls.txt` 等) の保存先 |
+61: | `MANAGER_PORT` | `9980` | 管理画面の公開ポート |
+62: 
+63: ## デプロイ・設定手順
 
 ### 1. 必須要件
 *   Docker および Docker Compose がインストールされていること (または Coolify 環境)
@@ -83,6 +103,6 @@ docker-compose logs -f downloader
 
 ## 開発・運用メモ
 
-*   **ログ**: `downloader` の標準出力は Docker ログにリダイレクトされているため、`docker logs` コマンドや Coolify のログ画面で確認できます。
+*   **ログ**: 管理画面 (Manager) の "Download Logs" から確認できます。また、`docker-compose logs` でも確認可能です。
 *   **永続化**: ダウンロードデータは `x_downloads` ボリュームに保存されます。
 *   **認証エラー**: ダウンロードが失敗する場合は、Cookie の有効期限切れの可能性があります。`cookies.txt` を更新してください。
