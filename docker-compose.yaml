@@ -19,6 +19,6 @@ services:
       - '${DOWNLOAD_ROOT}:/downloads'
       - '${CONFIG_ROOT}:/config'
     ports:
-      - '${MANAGER_PORT:-9980}:80' # ← ここが重要！exposeではなくportsを使います
+      - '${MANAGER_PORT:-9980}:8000' # ← ここが重要！exposeではなくportsを使います
     environment:
       - TZ=Asia/Tokyo
