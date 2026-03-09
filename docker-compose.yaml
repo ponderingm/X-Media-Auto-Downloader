@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${DOWNLOAD_ROOT}:/downloads  # 永続化ボリューム（画像保存先）
-      - ${CONFIG_ROOT:-./config}:/config          # 設定・Cookie・履歴DB
+      - ${CONFIG_ROOT}:/config          # 設定・Cookie・履歴DB
     environment:
       - TZ=Asia/Tokyo
       - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT:-x_downloads}
@@ -16,8 +16,8 @@ services:
     container_name: x_manager
     restart: unless-stopped
     volumes:
-      - ${DOWNLOAD_ROOT:-x_downloads}:/downloads  # urls.txtの読み書き用
-      - ${CONFIG_ROOT:-./config}:/config          # ログファイルの読み込み用
+      - ${DOWNLOAD_ROOT}:/downloads  # urls.txtの読み書き用
+      - ${CONFIG_ROOT}:/config          # ログファイルの読み込み用
     expose:
       - "80"
     environment:
