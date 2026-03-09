@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - '${DOWNLOAD_ROOT}:/downloads'
-      - '${CONFIG_ROOT}:/config' # ← フォールバックを削除し、環境変数のみに！
+      - '${CONFIG_ROOT}:/config'
     environment:
       - TZ=Asia/Tokyo
       - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT}
@@ -16,11 +16,9 @@ services:
     container_name: x_manager
     restart: unless-stopped
     volumes:
-      - '${DOWNLOAD_ROOT}:/downloads' # ← manager側も環境変数のみに統一！
-      - '${CONFIG_ROOT}:/config' # ← こちらも環境変数のみに！
-    ports: # ← exposeからportsに変更（ブラウザからアクセスするため）
-      - '${MANAGER_PORT:-9980}:80'
+      - '${DOWNLOAD_ROOT}:/downloads'
+      - '${CONFIG_ROOT}:/config'
+    ports:
+      - '${MANAGER_PORT:-9980}:80' # ← ここが重要！exposeではなくportsを使います
     environment:
       - TZ=Asia/Tokyo
-
-# 注意：一番下にあった「volumes: x_downloads: null」は完全に削除しました。
