@@ -4,11 +4,11 @@ services:
     container_name: x_downloader
     restart: unless-stopped
     volumes:
-      - ${DOWNLOAD_ROOT}:/downloads  # 永続化ボリューム（画像保存先）
-      - ${CONFIG_ROOT}:/config          # 設定・Cookie・履歴DB
+      - '${DOWNLOAD_ROOT}:/downloads'
+      - '${CONFIG_ROOT}:/config' # ← フォールバックを削除し、環境変数のみに！
     environment:
       - TZ=Asia/Tokyo
-      - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT:-x_downloads}
+      - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT}
       - DEBUG_MANAGER_PORT=${MANAGER_PORT:-9980}
 
   manager:
@@ -16,12 +16,11 @@ services:
     container_name: x_manager
     restart: unless-stopped
     volumes:
-      - ${DOWNLOAD_ROOT}:/downloads  # urls.txtの読み書き用
-      - ${CONFIG_ROOT}:/config          # ログファイルの読み込み用
-    expose:
-      - "80"
+      - '${DOWNLOAD_ROOT}:/downloads' # ← manager側も環境変数のみに統一！
+      - '${CONFIG_ROOT}:/config' # ← こちらも環境変数のみに！
+    ports: # ← exposeからportsに変更（ブラウザからアクセスするため）
+      - '${MANAGER_PORT:-9980}:80'
     environment:
       - TZ=Asia/Tokyo
 
-volumes:
-  x_downloads:                      # 名前付きボリューム
+# 注意：一番下にあった「volumes: x_downloads: null」は完全に削除しました。
