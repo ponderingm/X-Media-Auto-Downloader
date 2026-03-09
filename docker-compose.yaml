@@ -1,11 +1,15 @@
 services:
   downloader:
     build: .
-    container_name: x_downloader
     restart: unless-stopped
     volumes:
-      - '${DOWNLOAD_ROOT}:/downloads'
-      - '${CONFIG_ROOT}:/config'
+      # type: bind を指定することで、Coolifyに「勝手にボリュームを作るな」と命令できます
+      - type: bind
+        source: ${DOWNLOAD_ROOT}
+        target: /downloads
+      - type: bind
+        source: ${CONFIG_ROOT}
+        target: /config
     environment:
       - TZ=Asia/Tokyo
       - DEBUG_DOWNLOAD_ROOT=${DOWNLOAD_ROOT}
@@ -13,12 +17,15 @@ services:
 
   manager:
     build: ./manager
-    container_name: x_manager
     restart: unless-stopped
     volumes:
-      - '${DOWNLOAD_ROOT}:/downloads'
-      - '${CONFIG_ROOT}:/config'
+      - type: bind
+        source: ${DOWNLOAD_ROOT}
+        target: /downloads
+      - type: bind
+        source: ${CONFIG_ROOT}
+        target: /config
     ports:
-      - '${MANAGER_PORT:-9980}:8000' # ← ここが重要！exposeではなくportsを使います
+      - '${MANAGER_PORT:-9980}:8000'
     environment:
       - TZ=Asia/Tokyo
