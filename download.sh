@@ -14,6 +14,11 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" | tee -a "$LOG_FILE"
 }
 
+# URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
+extract_account() {
+    echo "$1" | sed -E 's#https?://(x|twitter)\.com/([^/?]+).*#\2#i'
+}
+
 log "----------------------------------------"
 log "Job started"
 
@@ -33,11 +38,21 @@ if [ -f "$URL_LIST" ]; then
         # 整形
         url=$(echo "$url" | tr -d '\r' | xargs)
         log "Processing: $url"
+
+        # URLからアカウント名を抽出してアカウント別ディレクトリを決定
+        account=$(extract_account "$url")
+        if [ -n "$account" ] && [ "$account" != "$url" ]; then
+            DOWNLOAD_DIR="/downloads/$account"
+            mkdir -p "$DOWNLOAD_DIR"
+        else
+            log "Warning: Could not extract account name from URL, using root directory"
+            DOWNLOAD_DIR="/downloads"
+        fi
         
         # 実行 (履歴管理あり)
         # gallery-dlの出力もログに記録
         gallery-dl --cookies "$COOKIE_FILE" \
-                   --directory /downloads \
+                   --directory "$DOWNLOAD_DIR" \
                    --download-archive "$ARCHIVE_FILE" \
                    "$url" 2>&1 | tee -a "$LOG_FILE"
                    
