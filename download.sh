@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# PATHにpipのインストール先を追加 (cronはPATHが最小限のため)
+export PATH="/usr/local/bin:$PATH"
+
 # 設定ファイルパス
 URL_LIST="/downloads/urls.txt"
 COOKIE_FILE="/config/cookies.txt"
@@ -14,9 +17,9 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" | tee -a "$LOG_FILE"
 }
 
-# URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
+# URLからアカウント名を抽出する関数 (x.com / twitter.com に対応、www.プレフィックスにも対応)
 extract_account() {
-    echo "$1" | sed -E 's#https?://(x|twitter)\.com/([^/?]+).*#\2#i'
+    echo "$1" | sed -E 's#https?://(www\.)?(x|twitter)\.com/([^/?]+).*#\3#i'
 }
 
 log "----------------------------------------"
