@@ -74,15 +74,15 @@ if [ -f "$URL_LIST" ]; then
             "${GALLERY_DL_CMD[@]}" --cookies "$COOKIE_FILE" \
                                    --directory "$DOWNLOAD_DIR" \
                                    --download-archive "$ARCHIVE_FILE" \
-                                   "$url" 2>&1 | tee -a "$LOG_FILE" "$attempt_log"
-            gallery_dl_status=${PIPESTATUS[0]}
+                                   "$url" > >(tee -a "$LOG_FILE" "$attempt_log") 2>&1
+            gallery_dl_status=$?
 
             if [ "$gallery_dl_status" -eq 0 ]; then
                 rm -f "$attempt_log"
                 break
             fi
 
-            if grep -Eqi "rate[ -]?limit|too many requests|http error 429" "$attempt_log"; then
+            if grep -Eqi "rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)" "$attempt_log"; then
                 if [ "$attempt" -lt "$RATE_LIMIT_MAX_RETRIES" ]; then
                     log "Rate limit detected. Waiting $RATE_LIMIT_WAIT_SECONDS seconds before retrying: $url"
                     rm -f "$attempt_log"
