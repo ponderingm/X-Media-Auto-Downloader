@@ -16,7 +16,7 @@ log() {
 
 # URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
 extract_account() {
-    echo "$1" | sed -E 's#^https?://(www\.|mobile\.)?(x|twitter)\.com/@?([^/?#]+).*$#\3#i'
+    echo "$1" | sed -E 's#^https?://(www\.|mobile\.)?(x|twitter)\.com/@?([^/?#]+).*$#\3#'
 }
 
 if command -v gallery-dl >/dev/null 2>&1; then
