@@ -37,6 +37,7 @@ Cronを使用し、毎日定時にスクレイピングを実行するコンテ�
     *   `config/urls.txt` から対象URLを読み込み
     *   `config/cookies.txt` を使用して認証
     *   `gallery-dl` を使用してメディアをダウンロード
+    *   レートリミット検知時は15分待機して1回リトライ
     *   ダウンロード先 `/downloads/{account}/` にアカウントごとに保存
     *   ダウンロード履歴を `archive.sqlite3` に保存し、重複ダウンロードを防止
 
