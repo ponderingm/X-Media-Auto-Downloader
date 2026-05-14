@@ -10,7 +10,6 @@ ARG GALLERY_DL_VERSION=1.32.1
 RUN pip install --no-cache-dir --upgrade "gallery-dl==${GALLERY_DL_VERSION}"
 
 # スクリプト配置
-# スクリプト配置
 COPY download.sh /download.sh
 COPY entrypoint.sh /entrypoint.sh
 COPY crontab /etc/cron.d/downloader-cron
