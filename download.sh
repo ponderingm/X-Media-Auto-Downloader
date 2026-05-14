@@ -16,7 +16,7 @@ log() {
 
 # URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
 extract_account() {
-    echo "$1" | sed -E 's#https?://(www\.)?(x|twitter)\.com/@?([^/?#]+).*#\3#i'
+    echo "$1" | sed -E 's#^https?://(www\.|mobile\.)?(x|twitter)\.com/@?([^/?#]+).*$#\3#i'
 }
 
 if command -v gallery-dl >/dev/null 2>&1; then
@@ -54,8 +54,9 @@ if [ -f "$URL_LIST" ]; then
             DOWNLOAD_DIR="/downloads/$account"
             mkdir -p "$DOWNLOAD_DIR"
         else
-            log "Warning: Could not extract account name from URL, using root directory"
-            DOWNLOAD_DIR="/downloads"
+            log "Warning: Could not extract account name from URL, using /downloads/_unknown"
+            DOWNLOAD_DIR="/downloads/_unknown"
+            mkdir -p "$DOWNLOAD_DIR"
         fi
         
         # 実行 (履歴管理あり)
