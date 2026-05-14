@@ -75,24 +75,25 @@ if [ -f "$URL_LIST" ]; then
         # 実行 (履歴管理あり)
         # gallery-dlの出力もログに記録
         attempt=0
+        attempt_log=$(mktemp)
         while [ "$attempt" -le "$RATE_LIMIT_MAX_RETRIES" ]; do
-            attempt_log=$(mktemp)
+            : > "$attempt_log"
 
             "${GALLERY_DL_CMD[@]}" --cookies "$COOKIE_FILE" \
                                    --directory "$DOWNLOAD_DIR" \
                                    --download-archive "$ARCHIVE_FILE" \
-                                   "$url" > >(tee -a "$LOG_FILE" "$attempt_log") 2>&1
-            gallery_dl_status=$?
+                                   "$url" 2>&1 | tee -a "$LOG_FILE" "$attempt_log"
+            gallery_dl_status=${PIPESTATUS[0]}
 
             if [ "$gallery_dl_status" -eq 0 ]; then
                 rm -f "$attempt_log"
+                attempt_log=""
                 break
             fi
 
             if grep -Eqi "$RATE_LIMIT_PATTERN" "$attempt_log"; then
                 if [ "$attempt" -lt "$RATE_LIMIT_MAX_RETRIES" ]; then
                     log "Rate limit detected. Waiting $RATE_LIMIT_WAIT_SECONDS seconds before retrying: $url"
-                    rm -f "$attempt_log"
                     sleep "$RATE_LIMIT_WAIT_SECONDS"
                     attempt=$((attempt + 1))
                     continue
@@ -103,6 +104,7 @@ if [ -f "$URL_LIST" ]; then
             fi
 
             rm -f "$attempt_log"
+            attempt_log=""
             break
         done
                     
