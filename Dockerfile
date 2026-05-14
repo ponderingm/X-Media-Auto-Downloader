@@ -6,7 +6,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # gallery-dl
-RUN pip install --no-cache-dir gallery-dl
+ARG GALLERY_DL_VERSION=1.32.1
+RUN pip install --no-cache-dir --upgrade "gallery-dl==${GALLERY_DL_VERSION}"
 
 # スクリプト配置
 # スクリプト配置
