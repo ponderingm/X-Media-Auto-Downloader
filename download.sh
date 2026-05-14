@@ -14,7 +14,7 @@ LOG_FILE="${LOG_FILE:-$CONFIG_ROOT/download.log}"
 RATE_LIMIT_WAIT_SECONDS="${RATE_LIMIT_WAIT_SECONDS:-900}"
 RATE_LIMIT_MAX_RETRIES="${RATE_LIMIT_MAX_RETRIES:-1}"
 # rate limit系の代表的なメッセージ/HTTP 429 を検知
-RATE_LIMIT_PATTERN="rate[ -]?limit|rate-limited|too many requests|http error 429|\\b429\\b"
+RATE_LIMIT_PATTERN="rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)"
 # trapで後始末するためにグローバルで保持
 attempt_log=""
 
@@ -93,7 +93,7 @@ if [ -f "$URL_LIST" ]; then
                 break
             fi
 
-            if grep -Eqi "$RATE_LIMIT_PATTERN" "$attempt_log"; then
+            if grep -Eqi -m 1 "$RATE_LIMIT_PATTERN" "$attempt_log"; then
                 if [ "$attempt" -lt "$RATE_LIMIT_MAX_RETRIES" ]; then
                     log "Rate limit detected. Waiting $RATE_LIMIT_WAIT_SECONDS seconds before retrying: $url"
                     sleep "$RATE_LIMIT_WAIT_SECONDS"
