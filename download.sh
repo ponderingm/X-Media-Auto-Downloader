@@ -13,11 +13,13 @@ ARCHIVE_FILE="${ARCHIVE_FILE:-$CONFIG_ROOT/archive.sqlite3}"
 LOG_FILE="${LOG_FILE:-$CONFIG_ROOT/download.log}"
 RATE_LIMIT_WAIT_SECONDS="${RATE_LIMIT_WAIT_SECONDS:-900}"
 RATE_LIMIT_MAX_RETRIES="${RATE_LIMIT_MAX_RETRIES:-1}"
-RATE_LIMIT_PATTERN="${RATE_LIMIT_PATTERN:-rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)}"
+RATE_LIMIT_PATTERN="rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)"
+# trapで後始末するためにグローバルで保持
 attempt_log=""
 
 cleanup_attempt_log() {
     [ -n "$attempt_log" ] && rm -f "$attempt_log"
+    attempt_log=""
 }
 trap cleanup_attempt_log EXIT INT TERM
 
@@ -77,7 +79,7 @@ if [ -f "$URL_LIST" ]; then
         attempt=0
         attempt_log=$(mktemp)
         while [ "$attempt" -le "$RATE_LIMIT_MAX_RETRIES" ]; do
-            : > "$attempt_log"
+            > "$attempt_log"
 
             "${GALLERY_DL_CMD[@]}" --cookies "$COOKIE_FILE" \
                                    --directory "$DOWNLOAD_DIR" \
@@ -86,8 +88,7 @@ if [ -f "$URL_LIST" ]; then
             gallery_dl_status=${PIPESTATUS[0]}
 
             if [ "$gallery_dl_status" -eq 0 ]; then
-                rm -f "$attempt_log"
-                attempt_log=""
+                cleanup_attempt_log
                 break
             fi
 
@@ -103,8 +104,7 @@ if [ -f "$URL_LIST" ]; then
                 log "Download failed (exit code: $gallery_dl_status): $url"
             fi
 
-            rm -f "$attempt_log"
-            attempt_log=""
+            cleanup_attempt_log
             break
         done
                     
