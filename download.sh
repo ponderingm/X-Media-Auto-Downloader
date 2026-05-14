@@ -13,6 +13,13 @@ ARCHIVE_FILE="${ARCHIVE_FILE:-$CONFIG_ROOT/archive.sqlite3}"
 LOG_FILE="${LOG_FILE:-$CONFIG_ROOT/download.log}"
 RATE_LIMIT_WAIT_SECONDS="${RATE_LIMIT_WAIT_SECONDS:-900}"
 RATE_LIMIT_MAX_RETRIES="${RATE_LIMIT_MAX_RETRIES:-1}"
+RATE_LIMIT_PATTERN="${RATE_LIMIT_PATTERN:-rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)}"
+attempt_log=""
+
+cleanup_attempt_log() {
+    [ -n "$attempt_log" ] && rm -f "$attempt_log"
+}
+trap cleanup_attempt_log EXIT INT TERM
 
 # ログ出力関数 (stdout とファイルの両方に出力)
 log() {
@@ -82,7 +89,7 @@ if [ -f "$URL_LIST" ]; then
                 break
             fi
 
-            if grep -Eqi "rate[ -]?limit|rate-limited|too many requests|http error 429|(^|[^0-9])429([^0-9]|$)" "$attempt_log"; then
+            if grep -Eqi "$RATE_LIMIT_PATTERN" "$attempt_log"; then
                 if [ "$attempt" -lt "$RATE_LIMIT_MAX_RETRIES" ]; then
                     log "Rate limit detected. Waiting $RATE_LIMIT_WAIT_SECONDS seconds before retrying: $url"
                     rm -f "$attempt_log"
