@@ -6,9 +6,11 @@ set -o pipefail
 DOWNLOAD_ROOT="${DOWNLOAD_ROOT:-/downloads}"
 CONFIG_ROOT="${CONFIG_ROOT:-/config}"
 if [ ! -d "$DOWNLOAD_ROOT" ] && [ -d /downloads ]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') Warning: DOWNLOAD_ROOT '$DOWNLOAD_ROOT' not found. Falling back to /downloads." >&2
     DOWNLOAD_ROOT="/downloads"
 fi
 if [ ! -d "$CONFIG_ROOT" ] && [ -d /config ]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') Warning: CONFIG_ROOT '$CONFIG_ROOT' not found. Falling back to /config." >&2
     CONFIG_ROOT="/config"
 fi
 URL_LIST="${URL_LIST:-$DOWNLOAD_ROOT/urls.txt}"
@@ -36,7 +38,10 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" | tee -a "$LOG_FILE"
 }
 
-mkdir -p "$(dirname "$URL_LIST")" "$(dirname "$LOG_FILE")" "$(dirname "$ARCHIVE_FILE")"
+if ! mkdir -p "$(dirname "$URL_LIST")" "$(dirname "$LOG_FILE")" "$(dirname "$ARCHIVE_FILE")"; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') Error: failed to create required directories for URL/log/archive files." >&2
+    exit 1
+fi
 
 # URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
 extract_account() {
