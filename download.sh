@@ -16,8 +16,17 @@ log() {
 
 # URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
 extract_account() {
-    echo "$1" | sed -E 's#https?://(x|twitter)\.com/([^/?]+).*#\2#i'
+    echo "$1" | sed -E 's#https?://(www\.)?(x|twitter)\.com/@?([^/?#]+).*#\3#i'
 }
+
+if command -v gallery-dl >/dev/null 2>&1; then
+    GALLERY_DL_CMD=(gallery-dl)
+elif python3 -m gallery_dl --version >/dev/null 2>&1; then
+    GALLERY_DL_CMD=(python3 -m gallery_dl)
+else
+    log "Error: gallery-dl is not available (checked: 'gallery-dl' and 'python3 -m gallery_dl'). Verify installation in the container, then rebuild/restart the container if needed."
+    exit 1
+fi
 
 log "----------------------------------------"
 log "Job started"
@@ -51,10 +60,10 @@ if [ -f "$URL_LIST" ]; then
         
         # 実行 (履歴管理あり)
         # gallery-dlの出力もログに記録
-        gallery-dl --cookies "$COOKIE_FILE" \
-                   --directory "$DOWNLOAD_DIR" \
-                   --download-archive "$ARCHIVE_FILE" \
-                   "$url" 2>&1 | tee -a "$LOG_FILE"
+        "${GALLERY_DL_CMD[@]}" --cookies "$COOKIE_FILE" \
+                               --directory "$DOWNLOAD_DIR" \
+                               --download-archive "$ARCHIVE_FILE" \
+                               "$url" 2>&1 | tee -a "$LOG_FILE"
                    
     done < "$URL_LIST"
 else
