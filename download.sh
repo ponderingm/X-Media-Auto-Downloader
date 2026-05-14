@@ -24,7 +24,7 @@ if command -v gallery-dl >/dev/null 2>&1; then
 elif python3 -m gallery_dl --version >/dev/null 2>&1; then
     GALLERY_DL_CMD=(python3 -m gallery_dl)
 else
-    log "Error: gallery-dl command is not available. Please rebuild the downloader image."
+    log "Error: gallery-dl command is not available. Verify gallery-dl is installed in the container, then rebuild/restart downloader if needed."
     exit 1
 fi
 
