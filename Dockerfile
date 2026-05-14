@@ -7,7 +7,7 @@ RUN apt-get update && \
 
 # gallery-dl
 ARG GALLERY_DL_VERSION=1.32.1
-RUN pip install --no-cache-dir --upgrade "gallery-dl==${GALLERY_DL_VERSION}"
+RUN pip install --no-cache-dir "gallery-dl==${GALLERY_DL_VERSION}"
 
 # スクリプト配置
 COPY download.sh /download.sh
