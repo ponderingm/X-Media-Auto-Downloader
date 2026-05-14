@@ -5,6 +5,12 @@ set -o pipefail
 # 設定ファイルパス
 DOWNLOAD_ROOT="${DOWNLOAD_ROOT:-/downloads}"
 CONFIG_ROOT="${CONFIG_ROOT:-/config}"
+if [ ! -d "$DOWNLOAD_ROOT" ] && [ -d /downloads ]; then
+    DOWNLOAD_ROOT="/downloads"
+fi
+if [ ! -d "$CONFIG_ROOT" ] && [ -d /config ]; then
+    CONFIG_ROOT="/config"
+fi
 URL_LIST="${URL_LIST:-$DOWNLOAD_ROOT/urls.txt}"
 COOKIE_FILE="${COOKIE_FILE:-$CONFIG_ROOT/cookies.txt}"
 ARCHIVE_FILE="${ARCHIVE_FILE:-$CONFIG_ROOT/archive.sqlite3}"
@@ -29,6 +35,8 @@ log() {
     local msg="$1"
     echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" | tee -a "$LOG_FILE"
 }
+
+mkdir -p "$(dirname "$URL_LIST")" "$(dirname "$LOG_FILE")" "$(dirname "$ARCHIVE_FILE")"
 
 # URLからアカウント名を抽出する関数 (x.com / twitter.com に対応)
 extract_account() {
